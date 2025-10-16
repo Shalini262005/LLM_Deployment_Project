@@ -35,3 +35,6 @@ instance/
 .pytest_cache/
 .coverage
 htmlcov/
+
+task_round1.json
+task_round2.json
