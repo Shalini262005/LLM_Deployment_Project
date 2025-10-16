@@ -1,0 +1,6 @@
+Flask
+python-dotenv
+PyGithub
+google-generativeai
+requests
+gunicorn
