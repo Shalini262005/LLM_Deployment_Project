@@ -127,6 +127,7 @@ def api_endpoint():
             (repo_dir / name).write_text(content, encoding="utf-8")
 
         run(["git", "init"], cwd=str(repo_dir))
+        run(["git", "branch", "-M", "main"], cwd=str(repo_dir))
         run(["git", "config", "user.email", "shalinisivakumar06@gmail.com"], cwd=str(repo_dir))
         run(["git", "config", "user.name", "Shalini262005"], cwd=str(repo_dir))
         run(["git", "add", "."], cwd=str(repo_dir))
