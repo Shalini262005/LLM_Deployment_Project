@@ -176,6 +176,8 @@ def api_endpoint():
         # Modify project using Gemini
         files = generate_files_with_gemini(brief)
         for name, content in files.items():
+            if name == "index.html":
+                content = content.replace("</body>", f"<p>Round {round_idx} update</p></body>")
             (repo_dir / name).write_text(content, encoding="utf-8")
 
         # Ensure Git user identity is configured before committing
@@ -183,15 +185,16 @@ def api_endpoint():
         run(["git", "config", "user.name", "Shalini262005"], cwd=str(repo_dir))
 
         run(["git", "add", "."], cwd=str(repo_dir))
-        run(["git", "commit", "-m", "Round 2 update"], cwd=str(repo_dir))
+        status = subprocess.run(["git", "status", "--porcelain"], cwd=str(repo_dir), capture_output=True, text=True)
 
-        if gh and GITHUB_TOKEN:
+        if status.stdout.strip():
+            run(["git", "commit", "-m", f"Round {round_idx} update"], cwd=str(repo_dir))
             token_remote = f"https://x-access-token:{GITHUB_TOKEN}@github.com/{GITHUB_USER}/{repo_url_git.split('/')[-1]}"
             run(["git", "remote", "set-url", "origin", token_remote], cwd=str(repo_dir))
             run(["git", "branch", "-M", "main"], cwd=str(repo_dir))  # Ensure main branch
             run(["git", "push", "-u", "origin", "main"], cwd=str(repo_dir))
         else:
-            return jsonify({"error": "Missing GitHub credentials"}), 500
+            print("No changes to commit in Round", round_idx)
 
         commit_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=str(repo_dir)).decode().strip()
         pages_url = enable_github_pages(GITHUB_USER, repo_url_git.split("/")[-1])
