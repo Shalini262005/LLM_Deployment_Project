@@ -66,21 +66,33 @@ Return JSON with keys: index.html, README.md, LICENSE
         }
 
 def enable_github_pages(user, repo_name):
-    """Enable GitHub Pages using REST API"""
+    """Enable GitHub Pages using REST API (fixed version using POST)"""
     enable_url = f"https://api.github.com/repos/{user}/{repo_name}/pages"
     headers = {
         "Authorization": f"token {GITHUB_TOKEN}",
         "Accept": "application/vnd.github+json"
     }
-    payload_pages = {"source": {"branch": "main", "path": "/"}}
+    payload_pages = {
+        "source": {
+            "branch": "main",
+            "path": "/"
+        }
+    }
+
     try:
         print("Enabling GitHub Pages...")
-        r = requests.put(enable_url, headers=headers, json=payload_pages)
+        # Try POST first (correct for new setup)
+        r = requests.post(enable_url, headers=headers, json=payload_pages)
+        # If already enabled, GitHub may return 409 or 422, then use PUT
+        if r.status_code in [409, 422]:
+            print("Pages already exists, retrying with PUT…")
+            r = requests.put(enable_url, headers=headers, json=payload_pages)
         print("GitHub Pages response:", r.status_code, r.text)
     except Exception as e:
         print("GitHub Pages enable error:", e)
 
     pages_url = f"https://{user}.github.io/{repo_name}/"
+
     # Wait for deployment
     for attempt in range(12):
         try:
@@ -92,9 +104,9 @@ def enable_github_pages(user, repo_name):
             pass
         print(f"Waiting for GitHub Pages... ({attempt+1}/12)")
         time.sleep(5)
+
     print("⚠️ Pages may still be deploying.")
     return pages_url
-
 # ------------------ API Endpoint ------------------
 @app.route("/api-endpoint", methods=["POST"])
 def api_endpoint():
