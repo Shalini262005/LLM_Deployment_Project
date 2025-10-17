@@ -195,6 +195,14 @@ def api_endpoint():
             return jsonify({"error": "failed to notify evaluator"}), 500
         return jsonify(payload_out), 200
 
+@app.route("/", methods=["GET"])
+def home():
+    return jsonify({
+        "message": "LLM Deployment API is live!",
+        "endpoints": ["/api-endpoint (POST)"]
+    })
+
+
 # ------------------ Run App ------------------
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.getenv("PORT", 10000)))
+    app.run(host="0.0.0.0", port=int(os.getenv("PORT", 8000)))
