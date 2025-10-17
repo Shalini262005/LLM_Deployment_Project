@@ -75,7 +75,7 @@ def enable_github_pages(user, repo_name):
     payload_pages = {"source": {"branch": "main", "path": "/"}}
     try:
         print("Enabling GitHub Pages...")
-        r = requests.post(enable_url, headers=headers, json=payload_pages)
+        r = requests.put(enable_url, headers=headers, json=payload_pages)
         print("GitHub Pages response:", r.status_code, r.text)
     except Exception as e:
         print("GitHub Pages enable error:", e)
