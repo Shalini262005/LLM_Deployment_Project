@@ -186,6 +186,13 @@ def api_endpoint():
         run(["git", "commit", "-m", "Round 2 update"], cwd=str(repo_dir))
         run(["git", "push"], cwd=str(repo_dir))
 
+        if gh and GITHUB_TOKEN:
+            token_remote = f"https://x-access-token:{GITHUB_TOKEN}@github.com/{GITHUB_USER}/{repo_url_git.split('/')[-1]}"
+            run(["git", "remote", "set-url", "origin", token_remote], cwd=str(repo_dir))
+            run(["git", "branch", "-M", "main"], cwd=str(repo_dir))  # Ensure main branch
+            run(["git", "push", "-u", "origin", "main"], cwd=str(repo_dir))
+        else:
+            return jsonify({"error": "Missing GitHub credentials"}), 500
 
         commit_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=str(repo_dir)).decode().strip()
         pages_url = enable_github_pages(GITHUB_USER, repo_url_git.split("/")[-1])
