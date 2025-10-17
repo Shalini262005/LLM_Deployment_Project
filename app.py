@@ -127,8 +127,11 @@ def api_endpoint():
             (repo_dir / name).write_text(content, encoding="utf-8")
 
         run(["git", "init"], cwd=str(repo_dir))
+        run(["git", "config", "user.email", "shalinisivakumar06@gmail.com"], cwd=str(repo_dir))
+        run(["git", "config", "user.name", "Shalini262005"], cwd=str(repo_dir))
         run(["git", "add", "."], cwd=str(repo_dir))
         run(["git", "commit", "-m", "Initial commit"], cwd=str(repo_dir))
+
 
         if gh:
             user = gh.get_user()
@@ -175,9 +178,14 @@ def api_endpoint():
         for name, content in files.items():
             (repo_dir / name).write_text(content, encoding="utf-8")
 
+        # Ensure Git user identity is configured before committing
+        run(["git", "config", "user.email", "shalinisivakumar06@gmail.com"], cwd=str(repo_dir))
+        run(["git", "config", "user.name", "Shalini262005"], cwd=str(repo_dir))
+
         run(["git", "add", "."], cwd=str(repo_dir))
         run(["git", "commit", "-m", "Round 2 update"], cwd=str(repo_dir))
         run(["git", "push"], cwd=str(repo_dir))
+
 
         commit_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=str(repo_dir)).decode().strip()
         pages_url = enable_github_pages(GITHUB_USER, repo_url_git.split("/")[-1])
