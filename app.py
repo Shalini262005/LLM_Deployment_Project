@@ -184,7 +184,6 @@ def api_endpoint():
 
         run(["git", "add", "."], cwd=str(repo_dir))
         run(["git", "commit", "-m", "Round 2 update"], cwd=str(repo_dir))
-        run(["git", "push"], cwd=str(repo_dir))
 
         if gh and GITHUB_TOKEN:
             token_remote = f"https://x-access-token:{GITHUB_TOKEN}@github.com/{GITHUB_USER}/{repo_url_git.split('/')[-1]}"
